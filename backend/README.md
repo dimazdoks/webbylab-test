@@ -1,5 +1,9 @@
 ## Commands
 
+Install the dependencies:
+```bash
+yarn install
+```
 Running locally:
 
 ```bash
