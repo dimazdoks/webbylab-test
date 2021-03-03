@@ -1,0 +1,182 @@
+components:
+  schemas:
+    Movie:
+      type: object
+      required:
+      - title
+      - release
+      - format
+      - stars
+      properties:
+        title:
+          type: string
+          example: Casablanca
+        release:
+          type: number
+          format: int64
+          example: 1942
+        format:
+          type: string
+          example: DVD
+        stars:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+              - surname
+            properties:
+              name:
+                type: string
+                example: Humphrey
+              surname:
+                type: string
+                example: Bogart
+
+paths:
+  /movie:
+    post:
+      tags:
+      - movie
+      summary: Add a new movie to database
+      operationId: addMovie
+      requestBody:
+        description: Movie object that needs to be added to the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Movie'
+        required: true
+      responses:
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Title already taken / Option is required
+      x-codegen-request-body-name: body
+    get:
+      tags:
+        - "movie"
+      summary: Get movies
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: query
+        description: Get 10 movies sorted by title
+        schema:
+          type: object
+          properties:
+            limit: 
+              type: number
+            page: 
+              type: number
+          example:
+            limit: 10
+            page: 1
+      - in: "query 2"
+        name: query 2
+        description: Get first 10 moovies with title "Casablanca"
+        schema:
+          type: object
+          properties:
+            title: 
+              type: string
+            limit: 
+              type: number
+            page: 
+              type: number
+          example:
+            title: Casablanca
+            limit: 10
+            page: 1
+      - in: "query3"
+        name: query3
+        description: Get first 10 moovies with actor "Claude"
+        schema:
+          type: object
+          properties:
+            name: 
+              type: string
+            limit: 
+              type: number
+            page: 
+              type: number
+          example:
+            name:  Claude
+            limit: 10
+            page: 1
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request, title is not allowed
+  /movie/{movieId}:
+    get:
+      tags:
+        - "movie"
+      summary: Get movie by Id
+      parameters:
+      - name: "movieId"
+        in: "path"
+        description: "get movie by ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/components/schemas/Movie"
+        404:
+          description: Movie not found   
+    delete:
+      tags:
+        - "movie"
+      summary: Delete movie by Id
+      parameters:
+      - name: "movieId"
+        in: "path"
+        description: "ID of movie that needs to be deleted"
+        required: true
+        type: number
+        format: "int64"
+      example:
+        603e928e4b4489003cdbf7f7
+      responses:
+        204:
+          description: No Content
+        404:
+          description: Movie not found
+  /movie/file:
+    post:
+      tags:
+        - "movie"
+      content:
+        multipart/form-data:
+          schema:
+            properties:
+              file:
+                type: array
+                items:
+                  type: string
+                  format: binary
+      consumes: multipart/form-data
+      parameters:
+      - name: example
+        in: formData
+        description: The avatar of the user
+        required: true
+        type: string
+        format: binary
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request, file not found 
+        500:
+          description: Duplicate key error collection
+   
